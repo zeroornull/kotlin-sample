@@ -102,7 +102,21 @@ fun main() {
 举个例子，有一个可以构建不同编码字符串的函数 buildString：
  */
 
-fun buildString(byteArray: ByteArray, charsetName: String): String {
+/*fun buildString(byteArray: ByteArray, charsetName: String): String {
+    return String(byteArray, charset(charsetName))
+}
+
+fun main() {
+    val result = buildString("xxx".toByteArray(), "UTF-8")
+    println(result)
+}*/
+
+/*
+现在编程都会使用 UTF-8 作为默认编码，所以，为了不在每次调用这个函数的时候都要传入 charsetName 这个参数，可以为函数指定默认参数解决：
+ */
+
+/*
+fun buildString(byteArray: ByteArray, charsetName: String = "UTF-8"): String {
     return String(byteArray, charset(charsetName))
 }
 
@@ -110,3 +124,22 @@ fun main() {
     val result = buildString("xxx".toByteArray(), "UTF-8")
     println(result)
 }
+*/
+
+/*
+如果用偏函数来处理，会有什么不同呢？可惜了，Kotlin 本身还没有提供类似 python 那种 functools.partial 用于生成偏函数的功能，
+不过我们可以借助扩展函数实现类似的偏函数生成功能：
+ */
+
+/*
+// 对Function2进行扩展，partial2可以生成带有默认参数2的偏函数，partial1则是可以生成带有默认参数1的偏函数
+fun <P1, P2, R> Function2<P1, P2, R>.partial2(p2: P2) = fun(p1: P1) = this(p1, p2)
+fun <P1, P2, R> Function2<P1, P2, R>.partial1(p1: P1) = fun(p2: P2) = this(p1, p2)
+
+fun main(args: Array<String>) {
+    val buildStrPartial2 = ::buildString.partial2("UTF-8")
+    val result = buildStrPartial2("lqr".toByteArray())
+    println(result)
+}
+个人认为，现阶段在 Kotlin 中以这种方式使用偏函数还不如直接使用函数默认参数来的实在，对于偏函数，知道是个什么东西就好了。
+*/

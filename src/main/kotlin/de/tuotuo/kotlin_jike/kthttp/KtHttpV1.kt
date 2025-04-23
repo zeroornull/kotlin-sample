@@ -10,6 +10,14 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.jvm.javaMethod
 
+interface ApiService {
+    @GET("/repo")
+    fun repos(
+        @Field("lang") lang: String,
+        @Field("since") since: String
+    ): RepoList
+}
+
 data class RepoList(
     var count: Int?,
     var items: List<Repo>?,
@@ -27,20 +35,8 @@ data class Repo(
     var stars: String?
 )
 
-/**
- * 任何支持Get API
- * 以 GitHub Trendings API 为例：
- * https://trendings.herokuapp.com/repo?lang=java&since=weekly
- */
-interface ApiService {
-    @GET("/repo")
-    fun repos(
-        @Field("lang") lang: String,
-        @Field("since") since: String
-    ): RepoList
-}
-
 object KtHttpV1 {
+
     private var okHttpClient: OkHttpClient = OkHttpClient()
     private var gson: Gson = Gson()
     var baseUrl = "https://trendings.herokuapp.com"
@@ -58,6 +54,7 @@ object KtHttpV1 {
                 }
             }
             return@newProxyInstance null
+
         } as T
     }
 
@@ -76,10 +73,14 @@ object KtHttpV1 {
                     } else {
                         url += "&$key=$value"
                     }
+
                 }
             }
         }
-        val request = Request.Builder().url(url).build()
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
 
         val response = okHttpClient.newCall(request).execute()
 
@@ -87,10 +88,9 @@ object KtHttpV1 {
         val body = response.body
         val json = body?.string()
         val result = gson.fromJson<Any?>(json, genericReturnType)
+
         return result
     }
-
-
 }
 
 fun main() {

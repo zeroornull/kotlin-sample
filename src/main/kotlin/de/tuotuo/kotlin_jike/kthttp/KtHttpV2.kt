@@ -5,10 +5,8 @@ import indi.zeroornull.de.tuotuo.kotlin_jike.kthttp.annotations.Field
 import indi.zeroornull.de.tuotuo.kotlin_jike.kthttp.annotations.GET
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
-import kotlin.reflect.jvm.javaMethod
 
 
 /**
@@ -24,16 +22,19 @@ interface ApiServiceV2 {
     ): RepoList
 }
 
+
 object KtHttpV2 {
-    private var okHttpClient: OkHttpClient = OkHttpClient()
-    private var gson: Gson = Gson()
+
+    private val okHttpClient by lazy { OkHttpClient() }
+    private val gson by lazy { Gson() }
     var baseUrl = "https://trendings.herokuapp.com"
 
     inline fun <reified T> create(): T {
         return Proxy.newProxyInstance(
             T::class.java.classLoader,
             arrayOf(T::class.java)
-        ) { proxy, method, args ->
+        ) { _, method, args ->
+
             return@newProxyInstance method.annotations
                 .filterIsInstance<GET>()
                 .takeIf { it.size == 1 }
@@ -41,14 +42,15 @@ object KtHttpV2 {
         } as T
     }
 
-    fun invoke(url: String, method: Method, args: Array<out Any>): Any? = method
-        .parameterAnnotations
-        .takeIf { method.parameterAnnotations.size == args.size }
-        ?.mapIndexed { index, it -> Pair(it, args[index]) }
-        ?.fold(url, ::parseUrl)
-        ?.let { Request.Builder().url(url).build() }
-        ?.let { okHttpClient.newCall(it).execute().body?.string() }
-        ?.let { gson.fromJson(it, method.genericReturnType) }
+    fun invoke(url: String, method: Method, args: Array<Any>): Any? =
+        method.parameterAnnotations
+            .takeIf { method.parameterAnnotations.size == args.size }
+            ?.mapIndexed { index, it -> Pair(it, args[index]) }
+            ?.fold(url, ::parseUrl)
+            ?.let { Request.Builder().url(it).build() }
+            ?.let { okHttpClient.newCall(it).execute().body?.string() }
+            ?.let { gson.fromJson(it, method.genericReturnType) }
+
 
     private fun parseUrl(acc: String, pair: Pair<Array<Annotation>, Any>) =
         pair.first.filterIsInstance<Field>()
@@ -60,7 +62,6 @@ object KtHttpV2 {
                     "$acc?${field.value}=${pair.second}"
                 }
             }
-
 }
 
 fun main() {
@@ -68,5 +69,6 @@ fun main() {
         lang = "Kotlin",
         since = "weekly"
     )
+
     println(data)
 }

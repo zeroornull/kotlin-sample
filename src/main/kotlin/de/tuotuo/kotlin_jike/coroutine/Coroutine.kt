@@ -11,6 +11,10 @@ import kotlinx.coroutines.runBlocking
 import kotlin.concurrent.thread
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * VM参数 -Dkotlinx.coroutines.debug
+ */
+
 /*
 fun main() {
     val list = getList()

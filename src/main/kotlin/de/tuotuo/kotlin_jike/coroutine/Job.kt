@@ -80,14 +80,50 @@ fun main() = runBlocking {
         job.join()
         logX("Coroutine end")*/
 
-    val deferred = async {
-        logX("Coroutine start!")
-        delay(1000L)
-        logX("Coroutine end!")
-        "Coroutine result"
+    /*    val deferred = async {
+            logX("Coroutine start!")
+            delay(1000L)
+            logX("Coroutine end!")
+            "Coroutine result"
+        }
+        val result = deferred.await()
+        println("Result is $result")
+        logX("Process end!")*/
+
+    val parentJob: Job
+    var job1: Job? = null
+    var job2: Job? = null
+    var job3: Job? = null
+
+    parentJob = launch {
+        job1 = launch {
+            logX("Job1 start")
+            delay(1000L)
+            logX("Job1 Done")
+        }
+
+        job2 = launch {
+            logX("Job2 start")
+            delay(3000L)
+            logX("Job2 Done")
+        }
+
+        job3 = launch {
+            logX("Job3 start")
+            delay(5000L)
+            logX("Job3 Done")
+        }
     }
-    val result = deferred.await()
-    println("Result is $result")
+    delay(500L)
+    parentJob.children.forEachIndexed { index, job ->
+        when (index) {
+            0 -> println("job1==job is ${job1 == job}")
+            1 -> println("job1==job is ${job2 == job}")
+            2 -> println("job1==job is ${job3 == job}")
+        }
+    }
+//    parentJob.join()
+    parentJob.cancel()
     logX("Process end!")
 
 

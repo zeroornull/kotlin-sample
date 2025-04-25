@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-fun main() = runBlocking {
+/*fun main() = runBlocking {
     val user = getUserInfo()
     println(user)
 
@@ -14,9 +14,9 @@ fun main() = runBlocking {
     println(friendList)
     val feedList = getFeedList(friendList)
     println(feedList)
-}
+}*/
 
-suspend fun getUserInfo(): String {
+/*suspend fun getUserInfo(): String {
     withContext(Dispatchers.IO) {
         delay(1000L)
     }
@@ -35,4 +35,4 @@ suspend fun getFeedList(list: String): String {
         delay(1000L)
     }
     return "{FeedList...}"
-}
+}*/

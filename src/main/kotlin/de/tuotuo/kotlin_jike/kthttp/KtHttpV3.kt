@@ -1,9 +1,9 @@
 package indi.zeroornull.de.tuotuo.kotlin_jike.kthttp
 
-import com.google.gson.internal.GsonTypes.getRawType
 import indi.zeroornull.de.tuotuo.kotlin_jike.kthttp.annotations.Field
 import indi.zeroornull.de.tuotuo.kotlin_jike.kthttp.annotations.GET
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,8 +15,9 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Proxy
 import java.lang.reflect.Type
 
+// https://trendings.herokuapp.com/repo?lang=java&since=weekly
 
-interface Callback<T : Any> {
+interface Callback<T: Any> {
     fun onSuccess(data: T)
     fun onFail(throwable: Throwable)
 }
@@ -52,7 +53,7 @@ interface ApiServiceV3 {
         @Field("since") since: String
     ): KtCall<RepoList>
 
-    @GET(".repo")
+    @GET("/repo")
     fun reposSync(
         @Field("lang") lang: String,
         @Field("since") since: String
@@ -60,10 +61,12 @@ interface ApiServiceV3 {
 }
 
 object KtHttpV3 {
+
     private var okHttpClient: OkHttpClient = OkHttpClient()
     private var gson: Gson = Gson()
     var baseUrl = "https://trendings.herokuapp.com"
-    fun <T : Any> create(service: Class<T>): T {
+
+    fun <T: Any> create(service: Class<T>): T {
         return Proxy.newProxyInstance(
             service.classLoader,
             arrayOf<Class<*>>(service)
@@ -76,10 +79,11 @@ object KtHttpV3 {
                 }
             }
             return@newProxyInstance null
+
         } as T
     }
 
-    private fun <T : Any> invoke(path: String, method: Method, args: Array<Any>): Any? {
+    private fun <T: Any> invoke(path: String, method: Method, args: Array<Any>): Any? {
         if (method.parameterAnnotations.size != args.size) return null
 
         var url = path
@@ -94,12 +98,17 @@ object KtHttpV3 {
                     } else {
                         url += "&$key=$value"
                     }
+
                 }
             }
         }
-        val request = Request.Builder().url(url).build()
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
 
         val call = okHttpClient.newCall(request)
+
         return if (isKtCallReturn(method)) {
             val genericReturnType = getTypeArgument(method)
             KtCall<T>(call, gson, genericReturnType)
@@ -115,18 +124,21 @@ object KtHttpV3 {
     private fun getTypeArgument(method: Method) =
         (method.genericReturnType as ParameterizedType).actualTypeArguments[0]
 
-    private fun isKtCallReturn(method: Method) =
-        getRawType(method.genericReturnType) == KtCall::class.java
+    private fun isKtCallReturn(method: Method): Boolean {
+        val returnType = TypeToken.get(method.genericReturnType).rawType
+        return returnType == KtCall::class.java
+    }
+
 }
 
 fun main() {
-//        testSync()
+//    testSync()
     testAsync()
 }
 
-private fun testSync(){
+private fun testSync() {
     val api: ApiServiceV3 = KtHttpV3.create(ApiServiceV3::class.java)
-    val data: RepoList = api.reposSync(lang = "Kotlin",since = "weekly")
+    val data: RepoList = api.reposSync(lang = "Kotlin", since = "weekly")
     println(data)
 }
 

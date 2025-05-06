@@ -10,9 +10,11 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.jvm.javaMethod
 
-
-
-
+/**
+ * 任何支持Get API
+ * 以 GitHub Trendings API 为例：
+ * https://trendings.herokuapp.com/repo?lang=java&since=weekly
+ */
 interface ApiService {
     @GET("/repo")
     fun repos(

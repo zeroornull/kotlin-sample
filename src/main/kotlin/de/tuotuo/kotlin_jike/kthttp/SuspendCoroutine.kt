@@ -7,6 +7,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+/*
 fun main() = runBlocking {
     val start = System.currentTimeMillis()
 
@@ -45,4 +46,4 @@ suspend fun <T : Any> KtCall<T>.await(): T =
                 continuation.resumeWithException(throwable)
             }
         })
-    }
+    }*/

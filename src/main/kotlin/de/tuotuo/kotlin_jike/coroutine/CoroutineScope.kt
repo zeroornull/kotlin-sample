@@ -27,6 +27,8 @@ fun main() = runBlocking(Unconfined) {
     delay(1000L)
 }*/
 
+/*
+@OptIn(ExperimentalStdlibApi::class)
 fun main()=  runBlocking {
     val scope = CoroutineScope(Job() + mySingleDispatcher)
     
@@ -39,4 +41,32 @@ fun main()=  runBlocking {
     delay(500L)
     scope.cancel()
     delay(1000L)
+}*/
+
+/*
+@OptIn(ExperimentalStdlibApi::class)
+fun main() = runBlocking {
+    val scope = CoroutineScope(Job() + mySingleDispatcher)
+    scope.launch(CoroutineName("MyFirstCoroutine!")) {
+        logX(coroutineContext[CoroutineDispatcher] == mySingleDispatcher)
+        delay(1000L)
+        logX("First End!")
+    }
+    delay(500L)
+    scope.cancel()
+    delay(1000L)
+
+}*/
+
+suspend fun main() {
+    val myExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        println("CoroutineExceptionHandler got $throwable")
+    }
+    val scope = CoroutineScope(Job() + mySingleDispatcher)
+
+    val job = scope.launch(myExceptionHandler) {
+        val s: String? = null
+        s!!.length
+    }
+    job.join()
 }

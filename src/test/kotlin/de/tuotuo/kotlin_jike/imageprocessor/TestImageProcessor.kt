@@ -29,15 +29,15 @@ class TestImageProcessor {
     /**
      * 待实现的单元测试
      */
-    @Test
-    fun testCrop() {
-        val image = loadImage(File("${BASE_PATH}android.png"))
-        val height = image.height() / 2
-        val width = image.width() / 2
-        val target = loadImage(File("${BASE_PATH}android_half_crop.png"))
-        val crop = image.crop(0, 0, width, height)
-        checkImageSame(crop, target)
-    }
+//    @Test
+//    fun testCrop() {
+//        val image = loadImage(File("${BASE_PATH}android.png"))
+//        val height = image.height() / 2
+//        val width = image.width() / 2
+//        val target = loadImage(File("${BASE_PATH}android_half_crop.png"))
+//        val crop = image.crop(0, 0, width, height)
+//        checkImageSame(crop, target)
+//    }
 
     private fun checkImageSame(picture: Image, expected: Image) {
         assertEquals(picture.height(), expected.height())

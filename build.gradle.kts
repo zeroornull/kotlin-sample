@@ -4,7 +4,7 @@ plugins {
     kotlin("plugin.allopen") version "2.1.20"
 }
 
-group = "indi.zeroornull"
+group = "de.tuotuo"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -33,6 +33,6 @@ kotlin {
     allOpen {
         annotation("indi.zeroornull.com.fullstackaction.kotlinlang.learn.data_class.Poko")
     }
-    jvmToolchain(8)
+    jvmToolchain(17)
 
 }

@@ -1,6 +1,5 @@
 package indi.zeroornull.com.fullstackaction.kotlinlang.learn.companion_objects_and_static_members
 
-import com.sun.media.jfxmedia.events.PlayerEvent
 
 //object 关键字
 //Kotlin 中有一种特殊的类，它本身也是一个实例（单例），
